@@ -2,8 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const { calculateScore } = require("./calculateScore");
 const { saveToNotion } = require("./notionService");
+const { parseFormFields } = require("./utils/parseFormFields");
 
 const app = express();
 app.use(bodyParser.json());
@@ -12,19 +12,17 @@ const PORT = process.env.PORT;
 
 app.post("/webhook/tally", async (req, res) => {
     try {
-        const formData = req.body;
+        const formFields = req.body.data?.fields || [];
 
-        console.log("📥 Form data received: ", formData);
-        console.log("📥 Form fields: ", formData.data.fields);
+        console.log("📥 Form fields: ", formFields);
 
-        const name = formData.name || "No Name";
-        // const score = calculateScore(formData);
+        const parsedData = parseFormFields(formFields);
 
-        await saveToNotion({ name, score: 12 });
+        await saveToNotion(parsedData);
 
-        res.status(200).send("✅ Data received and processed.");
+        res.status(200).send("✅ Data saved to Notion.");
     } catch (error) {
-        console.error("❌ Error while processing:", error);
+        console.error("❌ Error:", error);
         res.status(500).send("Internal Server Error");
     }
 });
@@ -36,3 +34,5 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
 });
+
+// npx ngrok http 3000

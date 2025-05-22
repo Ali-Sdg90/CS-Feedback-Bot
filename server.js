@@ -12,8 +12,6 @@ app.post("/webhook/tally", async (req, res) => {
     const data = req.body;
     console.log("اطلاعات دریافتی از Tally:", data);
 
-    // const score = calculateScore(data);
-
     await notion.pages.create({
         parent: { database_id: databaseId },
         properties: {
@@ -34,10 +32,6 @@ app.post("/webhook/tally", async (req, res) => {
 
     res.status(200).send("OK");
 });
-
-function calculateScore(data) {
-    return (parseInt(data.answer1) || 0) + (parseInt(data.answer2) || 0);
-}
 
 app.listen(3000, () => {
     console.log("Listening on port 3000");
