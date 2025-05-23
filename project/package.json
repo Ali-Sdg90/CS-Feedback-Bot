@@ -1,8 +1,21 @@
 {
+  "name": "cs-feedback-bot",
+  "version": "1.0.0",
+  "main": "server.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "scripts": {
+    "start": "node server.js"
+  },
   "dependencies": {
     "@notionhq/client": "^3.1.1",
+    "axios": "^1.9.0",
     "body-parser": "^2.2.0",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "telegraf": "^4.16.3"
   }
 }
