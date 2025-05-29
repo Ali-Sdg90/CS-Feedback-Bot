@@ -1,13 +1,10 @@
 const { Client } = require("@notionhq/client");
-const { Telegraf } = require("telegraf");
 const decryptAndValidate = require("./utils/decryptAndValidate");
-const questions = require("./utils/questions");
+const { telegramService } = require("./utils/telegramService");
+const parseMentorsName = require("./utils/parseMentorsName");
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 const databaseId = process.env.NOTION_DATABASE_ID;
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-
-const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
 
 async function sendTelegramMessage(username, message) {
     console.log("📩 Sending Telegram message to:", username);
@@ -40,68 +37,7 @@ async function saveToNotion(parsedData) {
 
     const decrypted = decryptAndValidate(form);
 
-    const replyMessage = (status, reason = "") => `
-*وضعیت ثبت بازخورد:* ${
-        status === "success" ? "✅ ارسال‌شده با موفقیت" : "❌ ارسال ناموفق"
-    }
-${reason ? `*خطا:* ${reason}` : ""}
-
-👤 *فرستنده:* ${"decrypted.username" || "نامشخص"}
-👤 *دریافت‌کننده:* ${"mentorName" || "نامشخص"}
-
-📊 *ارزیابی عددی (با مقیاس ۱ تا ۵)
-۱ = بسیار ضعیف | ۵ = عالی:*
-
-${questions.q1_1}  
-⭐️ *امتیاز:* ${q1_1}
-
-${questions.q1_2}  
-⭐️ *امتیاز:* ${q1_2}
-
-${questions.q1_3}  
-⭐️ *امتیاز:* ${q1_3}
-
-${questions.q1_4}  
-⭐️ *امتیاز:* ${q1_4}
-
-${questions.q1_5}  
-⭐️ *امتیاز:* ${q1_5}
-
-💬 *سوالات تشریحی:*
-
-${questions.q2_1}  
-🗒️ ${q2_1 || "پاسخی ثبت نشده"}
-
-${questions.q2_2}  
-🗒️ ${q2_2 || "پاسخی ثبت نشده"}
-
-${questions.q2_3}  
-🗒️ ${q2_3 || "پاسخی ثبت نشده"}
-`;
-
-    if (decrypted.error === "expired") {
-        console.log("❌ Link expired.");
-        await sendTelegramMessage(
-            decrypted.username,
-            replyMessage("fail", "لینک منقضی شده است.")
-        );
-        return;
-    }
-
-    if (decrypted.error) {
-        console.log("❌ Decryption failed.");
-        await sendTelegramMessage(
-            decrypted.username,
-            replyMessage("fail", "خطا در رمزگشایی لینک.")
-        );
-        return;
-    }
-
-    const mentorId = mentorField?.value?.[0];
-    const mentorOption = mentorField?.options?.find(
-        (opt) => opt.id === mentorId
-    );
-    const mentorName = mentorOption?.text || "ناشناخته";
+    const mentorName = parseMentorsName(mentorField);
 
     const score =
         (Number(q1_1) +
@@ -139,13 +75,10 @@ ${questions.q2_3}
             },
         });
 
-        await sendTelegramMessage(decrypted.username, replyMessage("success"));
+        telegramService(decrypted, parsedData);
     } catch (err) {
         console.error("❌ Error saving to Notion:", err.message);
-        await sendTelegramMessage(
-            decrypted.username,
-            replyMessage("fail", "خطا در ذخیره در Notion")
-        );
+        // Send error message to Telegram
     }
 }
 

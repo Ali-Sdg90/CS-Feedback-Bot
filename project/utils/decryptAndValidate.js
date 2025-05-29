@@ -27,12 +27,12 @@ function decryptAndValidate(encryptedText) {
             (today - linkDate) / (1000 * 60 * 60 * 24)
         );
 
-        if (diffInDays > 7) return { error: "expired" };
+        if (diffInDays > 7) return { error: "expired", username: username };
 
         return { username };
     } catch (error) {
         console.error("❌ Error in decryptAndValidate:", error);
-        return { error: "decrypt_failed" };
+        return { error: "decrypt_failed", username: username };
     }
 }
 
