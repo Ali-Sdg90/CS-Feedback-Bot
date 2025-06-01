@@ -6,25 +6,10 @@ const parseMentorsName = require("./utils/parseMentorsName");
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 const databaseId = process.env.NOTION_DATABASE_ID;
 
-async function sendTelegramMessage(username, message) {
-    console.log("📩 Sending Telegram message to:", username);
-    console.log("📩 Message content:", message);
-
-    if (!username) return;
-
-    try {
-        await bot.telegram.sendMessage(`${"573124085"}`, message, {
-            parse_mode: "Markdown",
-        });
-    } catch (err) {
-        console.error("❌ Error sending Telegram message:", err);
-    }
-}
-
 async function saveToNotion(parsedData) {
     const {
         form,
-        mentorField,
+        send,
         "q1-1": q1_1,
         "q1-2": q1_2,
         "q1-3": q1_3,
@@ -35,9 +20,8 @@ async function saveToNotion(parsedData) {
         "q2-3": q2_3,
     } = parsedData;
 
-    const decrypted = decryptAndValidate(form);
-
-    const mentorName = parseMentorsName(mentorField);
+    const decryptedForm = decryptAndValidate(form, false);
+    const decryptedSend = decryptAndValidate(send, true);
 
     const score =
         (Number(q1_1) +
@@ -52,10 +36,10 @@ async function saveToNotion(parsedData) {
             parent: { database_id: databaseId },
             properties: {
                 sender: {
-                    rich_text: [{ text: { content: decrypted.username } }],
+                    rich_text: [{ text: { content: decryptedForm.username } }],
                 },
-                reciver: {
-                    rich_text: [{ text: { content: mentorName } }],
+                receiver: {
+                    rich_text: [{ text: { content: decryptedSend.username } }],
                 },
                 "q1-1": { number: Number(q1_1) },
                 "q1-2": { number: Number(q1_2) },
@@ -75,7 +59,7 @@ async function saveToNotion(parsedData) {
             },
         });
 
-        telegramService(decrypted, parsedData);
+        telegramService(decryptedForm, decryptedSend, parsedData);
     } catch (err) {
         console.error("❌ Error saving to Notion:", err.message);
         // Send error message to Telegram

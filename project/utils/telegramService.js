@@ -21,7 +21,7 @@ const sendTelegramMessage = async (username, message) => {
     }
 };
 
-const telegramService = async (decrypted, parsedData) => {
+const telegramService = async (decryptedForm, decryptedSend, parsedData) => {
     const {
         form,
         mentorField,
@@ -43,8 +43,8 @@ const telegramService = async (decrypted, parsedData) => {
     }
 ${reason ? `*خطا:* ${reason}` : ""}
 
-👤 *فرستنده:* @${decrypted.username || "نامشخص"}
-👤 *دریافت‌کننده:* ${mentorName || "نامشخص"}
+👤 *فرستنده:* @${decryptedForm.username || "نامشخص"}
+👤 *دریافت‌کننده:* ${decryptedSend.username || "نامشخص"}
 
 📊 *ارزیابی عددی (با مقیاس ۱ تا ۵)*
 ۱ = بسیار ضعیف | ۵ = عالی:
@@ -76,10 +76,10 @@ ${questions.q2_3}
 🗒️ ${q2_3 || "پاسخی ثبت نشده"}
 `;
 
-    if (decrypted.error === "expired") {
+    if (decryptedForm.error === "expired") {
         console.log("❌ Link expired.");
         await sendTelegramMessage(
-            decrypted.username,
+            decryptedForm.username,
             replyMessage(
                 "fail",
                 "لینک منقضی شده است. لطفا لینک جدید بسازید و دوباره فرم را پر کنید."
@@ -88,12 +88,16 @@ ${questions.q2_3}
         return;
     }
 
-    if (decrypted.error) {
-        console.log("❌ Decryption failed.", decrypted.username);
+    if (decryptedForm.error) {
+        console.log("❌ Decryption failed (Form).", decryptedForm.username);
+        return;
+    }
+    if (decryptedSend.error) {
+        console.log("❌ Decryption failed (Send).", decryptedSend.username);
         return;
     }
 
-    await sendTelegramMessage(decrypted.username, replyMessage("success"));
+    await sendTelegramMessage(decryptedForm.username, replyMessage("success"));
 };
 
 module.exports = {

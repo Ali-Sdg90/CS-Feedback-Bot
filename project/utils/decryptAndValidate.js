@@ -2,7 +2,7 @@ const encryptionKey = process.env.ENCRYPTION_KEY;
 const specialFN = process.env.USERNAME_SPECIAL_FN;
 const CryptoJS = require("crypto-js");
 
-function decryptAndValidate(encryptedText) {
+function decryptAndValidate(encryptedText, isSend) {
     try {
         console.log("Encrypted text: ", encryptedText);
 
@@ -11,8 +11,11 @@ function decryptAndValidate(encryptedText) {
 
         const stringFunction = eval(specialFN);
         const original = stringFunction(string);
-
         console.log("Decrypted string: ", original);
+
+        if (isSend) {
+            return { username: original };
+        }
 
         const [username, shortDate] = original.split(":");
         if (!username || !shortDate) return { error: "invalid_format" };
