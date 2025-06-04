@@ -1,10 +1,9 @@
 const { Client } = require("@notionhq/client");
 const decryptAndValidate = require("./utils/decryptAndValidate");
 const { telegramService } = require("./utils/telegramService");
-const parseMentorsName = require("./utils/parseMentorsName");
 
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
-const databaseId = process.env.NOTION_DATABASE_ID;
+const notion = new Client({ auth: process.env.NOTION_API_KEY_ANS });
+const databaseId = process.env.NOTION_DATABASE_ID_ANS;
 
 async function saveToNotion(parsedData) {
     const {
@@ -62,7 +61,7 @@ async function saveToNotion(parsedData) {
         telegramService(decryptedForm, decryptedSend, parsedData);
     } catch (err) {
         console.error("❌ Error saving to Notion:", err.message);
-        // Send error message to Telegram
+        // Todo: Send error message to Telegram
     }
 }
 

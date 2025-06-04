@@ -30,6 +30,8 @@ function decryptAndValidate(encryptedText, isSend) {
             (today - linkDate) / (1000 * 60 * 60 * 24)
         );
 
+        console.log("Difference in days: ", diffInDays);
+
         if (diffInDays > 7) return { error: "expired", username: username };
 
         return { username };
