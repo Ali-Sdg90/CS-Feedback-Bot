@@ -5,6 +5,7 @@ const getTelegramIdByUsername = require("./getTelegramIdByUsername");
 const buildSenderSuccessMessage = require("./telegramMessageTemplate/buildSenderSuccessMessage");
 const buildSenderErrorMessage = require("./telegramMessageTemplate/buildSenderErrorMessage");
 const buildReceiverMessage = require("./telegramMessageTemplate/buildReceiverMessage");
+const buildAdminLogMessage = require("./telegramMessageTemplate/buildAdminLogMessage");
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
@@ -87,6 +88,14 @@ const telegramService = async (decryptedForm, decryptedSend, parsedData) => {
     // Send message to receiver
     const receiverMsg = buildReceiverMessage(senderUsername, messageData);
     await sendTelegramMessage(receiverTelegramID, receiverMsg);
+
+    // Log to admin Group
+    const adminMessage = buildAdminLogMessage(
+        senderUsername,
+        receiverUsername,
+        messageData
+    );
+    await sendTelegramMessage(process.env.ADMIN_CHAT_ID, adminMessage);
 };
 
 module.exports = {
