@@ -2,9 +2,14 @@ const dayjs = require("dayjs");
 require("dayjs/locale/fa");
 dayjs.locale("fa");
 
-const buildAdminLogMessage = (senderUsername, receiverUsername, data) => {
-    const now = dayjs();
-    const dateTime = now.format("dddd، D MMMM YYYY - HH:mm");
+const buildAdminLogMessage = (
+    senderUsername,
+    receiverUsername,
+    data,
+    sessionId,
+    createdAt
+) => {
+    const dateTime = dayjs(createdAt).format("dddd، D MMMM YYYY - HH:mm");
 
     let statusIcon = "";
     let statusTag = "";
@@ -47,9 +52,10 @@ const buildAdminLogMessage = (senderUsername, receiverUsername, data) => {
             receiverUsername ? `@${receiverUsername}` : "نامشخص"
         }`,
         ``,
-        `📆 <b>تاریخ و زمان:</b> ${dateTime}`,
+        `<b>تاریخ و زمان:</b> ${dateTime}`,
+        `<b>آیدی بازخورد:</b> <code>${sessionId}</code>`,
         ``,
-        `📈 <b>میانگین امتیاز:</b> <b>${score.toFixed(2)}</b> ${statusIcon}`,
+        `<b>میانگین امتیاز:</b> <b>${score.toFixed(2)}</b> ${statusIcon}`,
         hasWrittenAnswers ? `` : null,
         hasWrittenAnswers ? writtenAnswersText : null,
         ``,

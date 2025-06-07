@@ -11,7 +11,7 @@ const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
 
 const sendTelegramMessage = async (chatId, message) => {
-    console.log("📩 Sending Telegram message to:", chatId);
+    // console.log("📩 Sending Telegram message to:", chatId);
     // console.log("📩 Message content:\n", message);
 
     if (!chatId) return;
@@ -25,7 +25,13 @@ const sendTelegramMessage = async (chatId, message) => {
     }
 };
 
-const telegramService = async (decryptedForm, decryptedSend, parsedData) => {
+const telegramService = async (
+    decryptedForm,
+    decryptedSend,
+    parsedData,
+    submissionId,
+    createdAt
+) => {
     const {
         "q1-1": q1_1,
         "q1-2": q1_2,
@@ -48,8 +54,8 @@ const telegramService = async (decryptedForm, decryptedSend, parsedData) => {
     const senderTelegramID = await getTelegramIdByUsername(senderUsername);
     const receiverTelegramID = await getTelegramIdByUsername(receiverUsername);
 
-    console.log("📥 Sender Telegram ID:", senderTelegramID);
-    console.log("📥 Receiver Telegram ID:", receiverTelegramID);
+    // console.log("📥 Sender Telegram ID:", senderTelegramID);
+    // console.log("📥 Receiver Telegram ID:", receiverTelegramID);
 
     const messageData = {
         q1_1,
@@ -77,23 +83,30 @@ const telegramService = async (decryptedForm, decryptedSend, parsedData) => {
     }
 
     if (decryptedForm.error || decryptedSend.error) {
-        console.log("❌ Decryption error in form or send data.");
+        console.error("❌ Decryption error in form or send data.");
         return;
     }
 
     // Send message to sender
-    const senderMsg = buildSenderSuccessMessage(receiverUsername, messageData);
+    const senderMsg = buildSenderSuccessMessage(
+        receiverUsername,
+        messageData,
+    );
     await sendTelegramMessage(senderTelegramID, senderMsg);
 
     // Send message to receiver
-    const receiverMsg = buildReceiverMessage(senderUsername, messageData);
+    const receiverMsg = buildReceiverMessage(
+        senderUsername,
+        messageData,
+    );
     await sendTelegramMessage(receiverTelegramID, receiverMsg);
 
     // Log to admin Group
     const adminMessage = buildAdminLogMessage(
         senderUsername,
         receiverUsername,
-        messageData
+        messageData,
+        submissionId,
     );
     await sendTelegramMessage(process.env.ADMIN_CHAT_ID, adminMessage);
 };

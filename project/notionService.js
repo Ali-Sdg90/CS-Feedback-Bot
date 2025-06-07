@@ -74,7 +74,13 @@ async function saveToNotion(parsedData, submissionId, createdAt) {
 
         // Send Telegram Message
         try {
-            await telegramService(decryptedForm, decryptedSend, parsedData);
+            await telegramService(
+                decryptedForm,
+                decryptedSend,
+                parsedData,
+                submissionId,
+                createdAt
+            );
         } catch (telegramError) {
             console.error("❌ Telegram Error:", telegramError);
             await reportErrorToAdmin(

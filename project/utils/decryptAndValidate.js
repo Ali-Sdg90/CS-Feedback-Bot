@@ -4,14 +4,14 @@ const CryptoJS = require("crypto-js");
 
 function decryptAndValidate(encryptedText, isSend) {
     try {
-        console.log("Encrypted text: ", encryptedText);
+        // console.log("Encrypted text: ", encryptedText);
 
         const bytes = CryptoJS.AES.decrypt(encryptedText, encryptionKey);
         const string = bytes.toString(CryptoJS.enc.Utf8);
 
         const stringFunction = eval(specialFN);
         const original = stringFunction(string);
-        console.log("Decrypted string: ", original);
+        // console.log("Decrypted string: ", original);
 
         if (isSend) {
             return { username: original };
@@ -30,7 +30,7 @@ function decryptAndValidate(encryptedText, isSend) {
             (today - linkDate) / (1000 * 60 * 60 * 24)
         );
 
-        console.log("Difference in days: ", diffInDays);
+        // console.log("Difference in days: ", diffInDays);
 
         if (diffInDays > 7) return { error: "expired", username: username };
 

@@ -18,11 +18,9 @@ app.post("/webhook/tally", async (req, res) => {
         const createdAt = formData?.createdAt;
 
         const formFields = formData?.fields || [];
-
-        console.log("📥 Form fields: ", formFields);
+        // console.log("📥 Form fields: ", formFields);
 
         const parsedData = parseFormFields(formFields);
-
         await saveToNotion(parsedData, submissionId, createdAt);
 
         res.status(200).send("✅ Data saved to Notion.");

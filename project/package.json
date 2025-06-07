@@ -1,6 +1,6 @@
 {
   "name": "cs-feedback-bot",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": "server.js",
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
     "body-parser": "^2.2.0",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
+    "dayjs-jalali": "^0.0.2",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "telegraf": "^4.16.3"
